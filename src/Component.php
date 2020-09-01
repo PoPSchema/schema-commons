@@ -11,6 +11,11 @@ use PoP\Root\Component\AbstractComponent;
  */
 class Component extends AbstractComponent
 {
+    /**
+     * Classes from PoP components that must be initialized before this component
+     *
+     * @return string[]
+     */
     public static function getDependedComponentClasses(): array
     {
         return [
