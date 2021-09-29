@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PoPSchema\SchemaCommons\ModuleProcessors\FormInputs;
 
-use Symfony\Contracts\Service\Attribute\Required;
 use PoP\ComponentModel\HelperServices\FormInputHelperServiceInterface;
 use PoP\ComponentModel\ModuleProcessors\AbstractFormInputModuleProcessor;
 use PoP\ComponentModel\ModuleProcessors\DataloadQueryArgsFilterInputModuleProcessorInterface;
@@ -13,6 +12,7 @@ use PoP\ComponentModel\ModuleProcessors\DataloadQueryArgsSchemaFilterInputModule
 use PoP\ComponentModel\ModuleProcessors\FormMultipleInputModuleProcessorTrait;
 use PoP\ComponentModel\Schema\SchemaDefinition;
 use PoPSchema\SchemaCommons\FilterInputProcessors\FilterInputProcessor;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class CommonFilterMultipleInputModuleProcessor extends AbstractFormInputModuleProcessor implements DataloadQueryArgsFilterInputModuleProcessorInterface, DataloadQueryArgsSchemaFilterInputModuleProcessorInterface
 {
@@ -46,20 +46,19 @@ class CommonFilterMultipleInputModuleProcessor extends AbstractFormInputModulePr
 
     public function getInputSubnames(array $module): array
     {
-        switch ($module[1]) {
-            case self::MODULE_FILTERINPUT_DATES:
-                return ['from', 'to'];
-        }
-        return [];
+        return match ($module[1]) {
+            self::MODULE_FILTERINPUT_DATES => ['from', 'to'],
+            default => [],
+        };
     }
 
     public function getName(array $module): string
     {
         // Add a nice name, so that the URL params when filtering make sense
-        $names = array(
+        return match ($module[1]) {
             self::MODULE_FILTERINPUT_DATES => 'date',
-        );
-        return $names[$module[1]] ?? parent::getName($module);
+            default => parent::getName($module),
+        };
     }
 
     protected function modifyFilterSchemaDefinitionItems(array &$schemaDefinitionItems, array $module): void
