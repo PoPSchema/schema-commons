@@ -13,21 +13,21 @@ use stdClass;
  *
  * @see https://spec.graphql.org/draft/#sec-Scalars.Custom-Scalars
  */
-class EmailScalarTypeResolver extends AbstractScalarTypeResolver
+class PhoneNumberScalarTypeResolver extends AbstractScalarTypeResolver
 {
     public function getTypeName(): string
     {
-        return 'Email';
+        return 'PhoneNumber';
     }
 
     public function getTypeDescription(): ?string
     {
-        return $this->translationAPI->__('Email scalar, such as leo@mysite.com', 'component-model');
+        return $this->translationAPI->__('Phone number scalar, such as +1-212-555-0149', 'component-model');
     }
 
     public function getSpecifiedByURL(): ?string
     {
-        return 'https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1';
+        return 'https://datatracker.ietf.org/doc/html/rfc3966#section-5.1';
     }
 
     public function coerceValue(string|int|float|bool|stdClass $inputValue): string|int|float|bool|stdClass|Error
@@ -36,8 +36,13 @@ class EmailScalarTypeResolver extends AbstractScalarTypeResolver
             return $error;
         }
 
-        if ($error = $this->validateFilterVar($inputValue, \FILTER_VALIDATE_EMAIL)) {
-            return $error;
+        if (\preg_match('/(\+{1}[0-9]{1,3}[0-9]{8,9})/', $inputValue) !== 1) {
+            return $this->getError(
+                sprintf(
+                    $this->translationAPI->__('The format for type \'%s\' is not right: it must be satisfied via regex /(\+{1}[0-9]{1,3}[0-9]{8,9})/', 'component-model'),
+                    $this->getMaybeNamespacedTypeName()
+                )
+            );
         }
         return $inputValue;
     }
