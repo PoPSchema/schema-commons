@@ -12,21 +12,21 @@ use stdClass;
  *
  * @see https://spec.graphql.org/draft/#sec-Scalars.Custom-Scalars
  */
-class URLScalarTypeResolver extends AbstractScalarTypeResolver
+class URLAbsolutePathScalarTypeResolver extends AbstractScalarTypeResolver
 {
     public function getTypeName(): string
     {
-        return 'URL';
+        return 'URLAbsolutePath';
     }
 
     public function getTypeDescription(): ?string
     {
-        return $this->getTranslationAPI()->__('URL scalar, such as https://mysite.com/my-fabulous-page', 'component-model');
+        return $this->getTranslationAPI()->__('URL Absolute Path scalar, such as "/my-fabulous-page" in URL "https://mysite.com/my-fabulous-page". The absolute path starts with "/", followed by the URL relative path', 'component-model');
     }
 
     public function getSpecifiedByURL(): ?string
     {
-        return 'https://url.spec.whatwg.org/#url-representation';
+        return 'https://url.spec.whatwg.org/#path-absolute-url-string';
     }
 
     public function coerceValue(string|int|float|bool|stdClass $inputValue): string|int|float|bool|object
@@ -35,7 +35,7 @@ class URLScalarTypeResolver extends AbstractScalarTypeResolver
             return $error;
         }
 
-        if ($error = $this->validateFilterVar($inputValue, \FILTER_VALIDATE_URL)) {
+        if ($error = $this->validateFilterVar('http://www.example.com' . $inputValue, \FILTER_VALIDATE_URL)) {
             return $error;
         }
         return $inputValue;
